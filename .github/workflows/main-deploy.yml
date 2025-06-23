@@ -1,0 +1,26 @@
+name: Main deploy
+
+on: 
+    workflow_dispatch:
+        inputs:
+            build-status:
+                description: "Choose the build status for the demo"
+                type: choice
+                options:
+                    - sucess
+                    - failure
+                default: 'success'  
+jobs:
+    call-build:
+        uses: ./.github/workflows/o-workflow.yml
+        with: 
+            build-status: ${{inputs.build-status}}
+        
+    deploy:
+        runs-on: ubuntu-latest
+        needs: call-build
+        if: ${{needs.call-build.outputs.status=='success'}}
+        steps:
+            - name: deploy
+              run: echo "Deploy"
+            
